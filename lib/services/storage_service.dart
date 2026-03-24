@@ -11,6 +11,12 @@ class StorageService {
   static const String _lastDateKey = 'level_up_last_date';
   static const String _unlockedKey = 'level_up_unlocked_rewards';
   static const String _categoryBonusDateKey = 'level_up_category_bonus_date';
+  static const String _moodLevelKey = 'level_up_mood_level';
+  static const String _moodDateKey = 'level_up_mood_date';
+  static const String _affirmationsEnabledKey =
+      'level_up_affirmations_enabled';
+  static const String _affirmationsHourKey = 'level_up_affirmations_hour';
+  static const String _affirmationsMinuteKey = 'level_up_affirmations_minute';
 
   static Future<void> saveTasks(List<Task> tasks) async {
     final prefs = await SharedPreferences.getInstance();
@@ -79,6 +85,57 @@ class StorageService {
   static Future<String?> loadCategoryBonusDate() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_categoryBonusDateKey);
+  }
+
+  static Future<void> clearCategoryBonusDate() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_categoryBonusDateKey);
+  }
+
+  static Future<void> saveMoodCheckIn({
+    required int level,
+    required String date,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_moodLevelKey, level);
+    await prefs.setString(_moodDateKey, date);
+  }
+
+  static Future<int?> loadMoodLevelForDate(String date) async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedDate = prefs.getString(_moodDateKey);
+    if (savedDate != date) {
+      return null;
+    }
+
+    return prefs.getInt(_moodLevelKey);
+  }
+
+  static Future<void> saveAffirmationsEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_affirmationsEnabledKey, enabled);
+  }
+
+  static Future<bool> loadAffirmationsEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_affirmationsEnabledKey) ?? false;
+  }
+
+  static Future<void> saveAffirmationTime({
+    required int hour,
+    required int minute,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_affirmationsHourKey, hour);
+    await prefs.setInt(_affirmationsMinuteKey, minute);
+  }
+
+  static Future<Map<String, int>> loadAffirmationTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+      'hour': prefs.getInt(_affirmationsHourKey) ?? 9,
+      'minute': prefs.getInt(_affirmationsMinuteKey) ?? 0,
+    };
   }
 
   static Future<List<Task>> resetDailyTasks(List<Task> tasks) async {

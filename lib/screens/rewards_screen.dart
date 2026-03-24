@@ -44,7 +44,7 @@ class RewardsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Text(
-                    'You have ${presenter.totalXp} XP • ${presenter.levelName}',
+                    'You have ${presenter.totalXp} XP - ${presenter.levelName}',
                     style: const TextStyle(
                       color: Color(0xFF5A4880),
                       fontWeight: FontWeight.w600,

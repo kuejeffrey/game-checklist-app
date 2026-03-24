@@ -5,6 +5,7 @@ import '../presenters/home_presenter.dart';
 import '../widgets/add_task_sheet.dart';
 import '../widgets/growth_stage_card.dart';
 import '../widgets/level_bar.dart';
+import '../widgets/mood_check_in_card.dart';
 import '../widgets/streak_badge.dart';
 import '../widgets/task_tile.dart';
 
@@ -49,6 +50,18 @@ class HomeScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        MoodCheckInCard(
+                          promptText: presenter.moodPromptText,
+                          helperText: presenter.moodHelperText,
+                          selectedMood: presenter.todayMoodOption,
+                          isLocked: presenter.hasMoodCheckInToday,
+                          onSelected: (level) {
+                            presenter.saveMoodLevel(level);
+                          },
+                        ),
+                        const SizedBox(height: 14),
+                        _buildAffirmationCard(),
+                        const SizedBox(height: 14),
                         LevelBar(
                           level: presenter.level,
                           levelName: presenter.levelName,
@@ -167,6 +180,40 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildAffirmationCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEDE8F5),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'A gentle note',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF7C6EAF),
+              letterSpacing: 0.6,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            presenter.inAppAffirmation,
+            style: const TextStyle(
+              fontSize: 15,
+              color: Color(0xFF5A4880),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCategorySection(TaskCategory category) {
     final tasks = presenter.tasksForCategory(category);
     if (tasks.isEmpty) {
@@ -220,7 +267,8 @@ class HomeScreen extends StatelessWidget {
               showCelebration: presenter.shouldCelebrateTask(task.id),
               xpGain: presenter.celebrationXp,
               onToggle: () => presenter.toggleTask(task.id),
-              onDelete: task.isDefault ? null : () => presenter.deleteTask(task.id),
+              onDelete:
+                  task.isDefault ? null : () => presenter.deleteTask(task.id),
             ),
           ),
         ],
@@ -375,7 +423,11 @@ class HomeScreen extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => AddTaskSheet(onAdd: presenter.addCustomTask),
+      builder: (_) => AddTaskSheet(
+        onAdd: (label, emoji, category) {
+          presenter.addCustomTask(label, emoji, category);
+        },
+      ),
     );
   }
 }

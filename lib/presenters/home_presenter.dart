@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 
 import '../models/growth_stage_model.dart';
+import '../models/mood_model.dart';
 import '../models/task_model.dart';
 import '../services/storage_service.dart';
 import '../utils/xp_utils.dart';
@@ -13,6 +14,7 @@ class HomePresenter extends ChangeNotifier {
   List<Task> _tasks = <Task>[];
   int _totalXp = 0;
   int _streak = 0;
+  int? _moodLevelToday;
   bool _isLoading = true;
   bool _dailyCategoryBonusEarned = false;
   String? _celebrationTaskId;
@@ -25,10 +27,15 @@ class HomePresenter extends ChangeNotifier {
   int get streak => _streak;
   bool get isLoading => _isLoading;
   bool get dailyCategoryBonusEarned => _dailyCategoryBonusEarned;
+  int? get moodLevel => _moodLevelToday;
+  bool get hasMoodCheckInToday => _moodLevelToday != null;
   String? get progressMessage => _progressMessage;
   int get celebrationXp => _celebrationXp;
   GrowthStage get growthStage => _growthStageForXp(_totalXp);
   GrowthStage? get nextGrowthStage => _nextGrowthStageForXp(_totalXp);
+  MoodOption? get todayMoodOption => _moodLevelToday == null
+      ? null
+      : moodOptionForLevel(_moodLevelToday!);
 
   int get completedCount => _tasks.where((task) => task.isCompleted).length;
   int get totalXpToday => _tasks
@@ -44,6 +51,40 @@ class HomePresenter extends ChangeNotifier {
       XpUtils.getDailyMessage(completedCount, _tasks.length);
   String get dailyTaskSummary => 'You completed $completedCount tasks today.';
   String get dailyXpSummary => 'You gained $totalXpToday XP today.';
+
+  String get moodPromptText => 'How are you feeling today?';
+
+  String get moodHelperText => hasMoodCheckInToday
+      ? 'Thanks for checking in today. You can update it again tomorrow.'
+      : 'Choose the face that feels closest right now.';
+
+  String get inAppAffirmation {
+    if (_moodLevelToday != null) {
+      if (_moodLevelToday! <= 2) {
+        return completedCount > 0
+            ? 'Hard days still deserve kindness.'
+            : 'You are still worthy on hard days.';
+      }
+      if (_moodLevelToday == 3) {
+        return completedCount > 0
+            ? 'Small steps still count.'
+            : 'Take it one gentle step at a time.';
+      }
+      return completedCount > 0
+          ? 'Glad you are here today.'
+          : 'It is good to see you here today.';
+    }
+
+    if (completedCount == 0) {
+      return 'One step at a time.';
+    }
+
+    if (completedCount >= 3) {
+      return 'You took care of yourself today.';
+    }
+
+    return 'You showed up today. That counts.';
+  }
 
   String get dailySupportSummary {
     if (dailyCategoryBonusEarned) {
@@ -116,6 +157,7 @@ class HomePresenter extends ChangeNotifier {
     final lastDate = await StorageService.loadLastDate();
     final bonusDate = await StorageService.loadCategoryBonusDate();
     final today = _formatDate(DateTime.now());
+    final moodLevel = await StorageService.loadMoodLevelForDate(today);
 
     List<Task> todayTasks = tasks;
 
@@ -140,9 +182,25 @@ class HomePresenter extends ChangeNotifier {
     _tasks = todayTasks;
     _totalXp = xp;
     _streak = streak;
+    _moodLevelToday = moodLevel;
     _dailyCategoryBonusEarned = bonusDate == today;
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> saveMoodLevel(int level) async {
+    if (_moodLevelToday != null) {
+      return;
+    }
+
+    final today = _formatDate(DateTime.now());
+    _moodLevelToday = level;
+    notifyListeners();
+
+    await StorageService.saveMoodCheckIn(
+      level: level,
+      date: today,
+    );
   }
 
   Future<void> toggleTask(String taskId) async {
@@ -167,7 +225,8 @@ class HomePresenter extends ChangeNotifier {
         _dailyCategoryBonusEarned = true;
         _totalXp += categoryBonusXp;
         xpGain += categoryBonusXp;
-        progressMessage = 'You cared for every category today. +$categoryBonusXp XP bonus.';
+        progressMessage =
+            'You cared for every category today. +$categoryBonusXp XP bonus.';
         await StorageService.saveCategoryBonusDate(today);
       }
 
@@ -183,6 +242,12 @@ class HomePresenter extends ChangeNotifier {
       );
     } else {
       _totalXp = (_totalXp - task.xpValue).clamp(0, 999999) as int;
+
+      if (_dailyCategoryBonusEarned && !_completedOneInEachCategory()) {
+        _dailyCategoryBonusEarned = false;
+        _totalXp = (_totalXp - categoryBonusXp).clamp(0, 999999) as int;
+        await StorageService.clearCategoryBonusDate();
+      }
     }
 
     notifyListeners();
@@ -212,13 +277,32 @@ class HomePresenter extends ChangeNotifier {
   }
 
   Future<void> deleteTask(String taskId) async {
-    _tasks = _tasks.where((task) => task.id != taskId).toList();
+    final index = _tasks.indexWhere((task) => task.id == taskId);
+    if (index == -1) {
+      return;
+    }
+
+    final taskToDelete = _tasks[index];
+    _tasks = List<Task>.from(_tasks)..removeAt(index);
+
+    if (taskToDelete.isCompleted) {
+      _totalXp = (_totalXp - taskToDelete.xpValue).clamp(0, 999999) as int;
+
+      if (_dailyCategoryBonusEarned && !_completedOneInEachCategory()) {
+        _dailyCategoryBonusEarned = false;
+        _totalXp = (_totalXp - categoryBonusXp).clamp(0, 999999) as int;
+        await StorageService.clearCategoryBonusDate();
+      }
+    }
+
     notifyListeners();
     await StorageService.saveTasks(_tasks);
+    await StorageService.saveXP(_totalXp);
   }
 
   Future<void> resetAllData() async {
     await StorageService.clearAll();
+    _moodLevelToday = null;
     _dailyCategoryBonusEarned = false;
     await loadData();
   }

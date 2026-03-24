@@ -4,6 +4,7 @@ import '../presenters/app_shell_presenter.dart';
 import '../presenters/home_presenter.dart';
 import '../presenters/rewards_presenter.dart';
 import '../presenters/settings_presenter.dart';
+import '../services/affirmation_notification_service.dart';
 import 'home_screen.dart';
 import 'rewards_screen.dart';
 import 'settings_screen.dart';
@@ -20,6 +21,7 @@ class _AppShellScreenState extends State<AppShellScreen> {
   late final HomePresenter _homePresenter;
   late final RewardsPresenter _rewardsPresenter;
   late final SettingsPresenter _settingsPresenter;
+  late final AffirmationNotificationService _notificationService;
 
   @override
   void initState() {
@@ -27,9 +29,14 @@ class _AppShellScreenState extends State<AppShellScreen> {
     _shellPresenter = AppShellPresenter();
     _homePresenter = HomePresenter();
     _rewardsPresenter = RewardsPresenter();
-    _settingsPresenter = const SettingsPresenter(versionLabel: '1.0.1 (MVP)');
+    _notificationService = AffirmationNotificationService();
+    _settingsPresenter = SettingsPresenter(
+      versionLabel: '1.0.2 (MVP)',
+      notificationService: _notificationService,
+    );
 
     _rewardsPresenter.initialize();
+    _settingsPresenter.initialize();
     _homePresenter.addListener(_syncRewards);
     _homePresenter.loadData();
   }
@@ -40,11 +47,13 @@ class _AppShellScreenState extends State<AppShellScreen> {
     _shellPresenter.dispose();
     _homePresenter.dispose();
     _rewardsPresenter.dispose();
+    _settingsPresenter.dispose();
     super.dispose();
   }
 
   Future<void> _handleResetAll() async {
     await _homePresenter.resetAllData();
+    await _settingsPresenter.resetAfterDataClear();
     _shellPresenter.selectTab(0);
   }
 
