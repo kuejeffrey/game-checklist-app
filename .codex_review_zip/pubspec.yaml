@@ -1,0 +1,35 @@
+name: level_up
+description: A cozy daily survival & productivity tracker with game-like rewards.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Local key-value storage — saves tasks, XP, and streak on device
+  shared_preferences: ^2.2.2
+
+  # Pixel-art / game-feel fonts (optional — add after basic setup)
+  # google_fonts: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Uncomment and add your pixel art assets here later:
+  # assets:
+  #   - assets/sprites/
+  #   - assets/icons/
+
+  # fonts:
+  #   - family: PixelFont
+  #     fonts:
+  #       - asset: assets/fonts/pixel.ttf
