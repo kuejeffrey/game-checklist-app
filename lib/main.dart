@@ -2,9 +2,24 @@ import 'package:flutter/material.dart';
 
 import 'screens/app_shell_screen.dart';
 import 'screens/splash_screen.dart';
+import 'services/supabase_service.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await SupabaseService.initialize();
+  } catch (error, stackTrace) {
+    FlutterError.reportError(
+      FlutterErrorDetails(
+        exception: error,
+        stack: stackTrace,
+        library: 'supabase',
+        context: ErrorDescription('while initializing Supabase'),
+      ),
+    );
+  }
+
   runApp(const LevelUpApp());
 }
 
