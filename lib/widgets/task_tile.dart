@@ -72,6 +72,8 @@ class _TaskTileState extends State<TaskTile>
     super.didUpdateWidget(oldWidget);
     if (widget.showCelebration && !oldWidget.showCelebration) {
       _controller.forward(from: 0);
+    } else if (!widget.showCelebration && oldWidget.showCelebration) {
+      _controller.reset();
     }
   }
 
