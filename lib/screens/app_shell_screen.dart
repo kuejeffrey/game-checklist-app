@@ -31,7 +31,7 @@ class _AppShellScreenState extends State<AppShellScreen> {
     _rewardsPresenter = RewardsPresenter();
     _notificationService = AffirmationNotificationService();
     _settingsPresenter = SettingsPresenter(
-      versionLabel: '1.0.2 (MVP)',
+      versionLabel: '1.1.0',
       notificationService: _notificationService,
     );
 
