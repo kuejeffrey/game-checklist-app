@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../models/task_model.dart';
+import '../theme/level_up_theme.dart';
+import 'level_up_badge.dart';
+import 'level_up_card.dart';
 
 class TaskTile extends StatefulWidget {
   const TaskTile({
@@ -97,11 +100,11 @@ class _TaskTileState extends State<TaskTile>
               return Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(22),
                   boxShadow: [
                     if (glow > 0)
                       BoxShadow(
-                        color: const Color(0xFF9FC5A0).withOpacity(glow * 0.18),
+                        color: LevelUpTheme.sage.withOpacity(glow * 0.16),
                         blurRadius: 18,
                         spreadRadius: glow * 2,
                         offset: const Offset(0, 8),
@@ -111,127 +114,113 @@ class _TaskTileState extends State<TaskTile>
                 child: child,
               );
             },
-            child: Material(
-              color: widget.task.isCompleted
-                  ? const Color(0xFFEFF7EF)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(16),
-                onTap: widget.onToggle,
-                onLongPress:
-                    widget.onDelete != null ? () => _showDeleteDialog(context) : null,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: widget.task.isCompleted
-                          ? const Color(0xFF9FC5A0).withOpacity(0.55)
-                          : Colors.grey.shade200,
+            child: LevelUpCard(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              radius: 22,
+              color:
+                  widget.task.isCompleted ? const Color(0xFFF8FBF8) : Colors.white,
+              borderColor: widget.task.isCompleted
+                  ? LevelUpTheme.sage.withOpacity(0.28)
+                  : LevelUpTheme.border,
+              boxShadow: const [],
+              onTap: widget.onToggle,
+              onLongPress:
+                  widget.onDelete != null ? () => _showDeleteDialog(context) : null,
+              child: Row(
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: widget.categoryColor.withOpacity(
+                        widget.task.isCompleted ? 0.16 : 0.12,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      widget.task.emoji,
+                      style: const TextStyle(fontSize: 22),
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 42,
-                        height: 42,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: widget.categoryColor.withOpacity(
-                            widget.task.isCompleted ? 0.14 : 0.1,
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.task.label,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            decoration: widget.task.isCompleted
+                                ? TextDecoration.lineThrough
+                                : null,
+                            color: widget.task.isCompleted
+                                ? LevelUpTheme.mutedForeground
+                                : LevelUpTheme.charcoal,
                           ),
-                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
-                          widget.task.emoji,
-                          style: const TextStyle(fontSize: 22),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            Text(
-                              widget.task.label,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                decoration: widget.task.isCompleted
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                                color: widget.task.isCompleted
-                                    ? Colors.grey.shade500
-                                    : Colors.grey.shade800,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                if (widget.categoryLabel != null)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: widget.categoryColor.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(999),
-                                    ),
-                                    child: Text(
-                                      widget.categoryLabel!,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: widget.categoryColor,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                Text(
-                                  widget.task.isCompleted
-                                      ? 'That counts.'
-                                      : '+${widget.task.xpValue} XP',
+                            if (widget.categoryLabel != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: widget.categoryColor.withOpacity(0.12),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Text(
+                                  widget.categoryLabel!,
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: widget.task.isCompleted
-                                        ? Colors.grey.shade500
-                                        : const Color(0xFF7C6EAF),
-                                    fontWeight: FontWeight.w600,
+                                    color: widget.categoryColor,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                              ],
+                              ),
+                            LevelUpBadge(
+                              label: widget.task.isCompleted
+                                  ? 'Completed'
+                                  : '+${widget.task.xpValue} XP',
+                              tone: widget.task.isCompleted
+                                  ? LevelUpBadgeTone.success
+                                  : LevelUpBadgeTone.gold,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 220),
-                        child: widget.task.isCompleted
-                            ? const Icon(
-                                Icons.check_circle,
-                                key: ValueKey('checked'),
-                                color: Color(0xFF9FC5A0),
-                                size: 30,
-                              )
-                            : Icon(
-                                Icons.radio_button_unchecked,
-                                key: const ValueKey('unchecked'),
-                                color: Colors.grey.shade300,
-                                size: 30,
-                              ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    child: widget.task.isCompleted
+                        ? const Icon(
+                            Icons.check_circle_rounded,
+                            key: ValueKey('checked'),
+                            color: LevelUpTheme.sage,
+                            size: 30,
+                          )
+                        : const Icon(
+                            Icons.radio_button_unchecked_rounded,
+                            key: ValueKey('unchecked'),
+                            color: LevelUpTheme.mutedForeground,
+                            size: 28,
+                          ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -249,7 +238,7 @@ class _TaskTileState extends State<TaskTile>
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF7C6EAF),
+                      color: LevelUpTheme.sage,
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
@@ -257,7 +246,7 @@ class _TaskTileState extends State<TaskTile>
                       style: const TextStyle(
                         fontSize: 11,
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
@@ -274,7 +263,6 @@ class _TaskTileState extends State<TaskTile>
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Remove task?'),
         content: Text('Remove "${widget.task.label}" from your list?'),
         actions: [
@@ -283,7 +271,9 @@ class _TaskTileState extends State<TaskTile>
             child: const Text('Keep it'),
           ),
           TextButton(
-            style: TextButton.styleFrom(foregroundColor: Colors.red.shade400),
+            style: TextButton.styleFrom(
+              foregroundColor: LevelUpTheme.destructive,
+            ),
             onPressed: () {
               Navigator.pop(ctx);
               widget.onDelete?.call();

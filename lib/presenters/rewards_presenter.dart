@@ -16,7 +16,11 @@ class RewardsPresenter extends ChangeNotifier {
   UnmodifiableListView<RewardItem> get rewards =>
       UnmodifiableListView(defaultRewards);
   int get totalXp => _totalXp;
+  int get level => XpUtils.getLevel(_totalXp);
   String get levelName => XpUtils.getLevelName(_totalXp);
+  double get levelProgress => XpUtils.getLevelProgress(_totalXp);
+  int get xpToNextLevel => XpUtils.xpToNextLevel(_totalXp);
+  int get unlockedCount => rewards.where(isUnlocked).length;
   String get encouragement =>
       'Each little bit of progress can uncover something new.';
 
@@ -43,6 +47,17 @@ class RewardsPresenter extends ChangeNotifier {
     } finally {
       _initializing = false;
     }
+  }
+
+  Future<void> reloadForCurrentUser(int totalXp) async {
+    _totalXp = totalXp;
+    _initialized = false;
+    _initializing = false;
+    _knownUnlockedIds = <String>{};
+    _newlyUnlockedIds = <String>{};
+
+    await initialize();
+    await updateTotalXp(totalXp);
   }
 
   bool isUnlocked(RewardItem reward) => _totalXp >= reward.xpNeeded;

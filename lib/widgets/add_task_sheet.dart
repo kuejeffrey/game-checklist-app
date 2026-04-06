@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../models/task_model.dart';
+import '../theme/level_up_theme.dart';
+import 'level_up_badge.dart';
 
 class AddTaskSheet extends StatefulWidget {
   const AddTaskSheet({
@@ -61,14 +63,14 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
 
     return Container(
       padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 24,
-        bottom: bottomPadding + 32,
+        left: 22,
+        right: 22,
+        top: 18,
+        bottom: bottomPadding + 24,
       ),
       decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -76,26 +78,39 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         children: [
           Center(
             child: Container(
-              width: 40,
+              width: 44,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(4),
+                color: LevelUpTheme.border,
+                borderRadius: BorderRadius.circular(999),
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
+          const LevelUpBadge(
+            label: 'Add a task',
+            tone: LevelUpBadgeTone.sage,
+          ),
+          const SizedBox(height: 12),
           const Text(
-            'What would you like to track?',
+            'What would you like to track today?',
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3D3060),
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: LevelUpTheme.charcoal,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 6),
+          const Text(
+            'Pick an emoji, choose a category, and add a short label.',
+            style: TextStyle(
+              fontSize: 14,
+              color: LevelUpTheme.mutedForeground,
+            ),
+          ),
+          const SizedBox(height: 18),
           SizedBox(
-            height: 50,
+            height: 52,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: _emojiOptions.length,
@@ -103,29 +118,33 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                 final emoji = _emojiOptions[index];
                 final isSelected = emoji == _selectedEmoji;
 
-                return GestureDetector(
-                  onTap: () => setState(() => _selectedEmoji = emoji),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 150),
-                    margin: const EdgeInsets.only(right: 8),
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFFEDE8F5)
-                          : Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(10),
-                      border: isSelected
-                          ? Border.all(
-                              color: const Color(0xFF7C6EAF),
-                              width: 2,
-                            )
-                          : null,
-                    ),
-                    child: Center(
-                      child: Text(
-                        emoji,
-                        style: const TextStyle(fontSize: 22),
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () => setState(() => _selectedEmoji = emoji),
+                      child: Ink(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? LevelUpTheme.sage.withOpacity(0.12)
+                              : LevelUpTheme.muted,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color:
+                                isSelected ? LevelUpTheme.sage : LevelUpTheme.border,
+                            width: isSelected ? 1.5 : 1,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            emoji,
+                            style: const TextStyle(fontSize: 23),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -143,17 +162,16 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                 label: Text('${category.emoji} ${category.label}'),
                 selected: isSelected,
                 onSelected: (_) => setState(() => _selectedCategory = category),
-                selectedColor: const Color(0xFFEDE8F5),
+                backgroundColor: LevelUpTheme.muted,
+                selectedColor: LevelUpTheme.sage.withOpacity(0.12),
+                side: BorderSide(
+                  color: isSelected ? LevelUpTheme.sage : LevelUpTheme.border,
+                ),
                 labelStyle: TextStyle(
                   color: isSelected
-                      ? const Color(0xFF5A4880)
-                      : Colors.grey.shade700,
-                  fontWeight: FontWeight.w600,
-                ),
-                side: BorderSide(
-                  color: isSelected
-                      ? const Color(0xFF7C6EAF)
-                      : Colors.grey.shade200,
+                      ? LevelUpTheme.sage
+                      : LevelUpTheme.charcoal,
+                  fontWeight: FontWeight.w700,
                 ),
               );
             }).toList(),
@@ -164,35 +182,30 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             autofocus: true,
             textCapitalization: TextCapitalization.sentences,
             decoration: InputDecoration(
-              hintText: 'e.g. Take my medication',
-              hintStyle: TextStyle(color: Colors.grey.shade400),
-              filled: true,
-              fillColor: Colors.grey.shade50,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
+              hintText: 'Take my medication',
+              prefixIcon: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 12),
+                child: Center(
+                  widthFactor: 1,
+                  child: Text(
+                    _selectedEmoji,
+                    style: const TextStyle(fontSize: 22),
+                  ),
+                ),
               ),
-              prefixText: '$_selectedEmoji  ',
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 0,
+                minHeight: 0,
+              ),
             ),
             onSubmitted: (_) => _submit(),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
+            child: FilledButton(
               onPressed: _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7C6EAF),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: const Text(
-                'Add to my list',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+              child: const Text('Add to my list'),
             ),
           ),
         ],

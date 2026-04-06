@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../theme/level_up_theme.dart';
+import 'level_up_badge.dart';
+import 'level_up_card.dart';
+import 'level_up_progress_bar.dart';
+
 class LevelBar extends StatelessWidget {
   const LevelBar({
     super.key,
@@ -16,88 +21,96 @@ class LevelBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF7C6EAF),
-        borderRadius: BorderRadius.circular(20),
-      ),
+    final progressPercent = (progress * 100).toInt();
+
+    return LevelUpCard(
+      padding: const EdgeInsets.all(20),
+      gradient: LevelUpTheme.progressGradient,
+      borderColor: LevelUpTheme.sage.withOpacity(0.18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Level $level',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    levelName,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
+                width: 54,
+                height: 54,
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(30),
+                  gradient: LevelUpTheme.authHeroGradient,
+                  borderRadius: BorderRadius.circular(18),
                 ),
-                child: Text(
-                  '\u26A1 $totalXP XP',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: const Icon(
+                  Icons.insights_rounded,
+                  color: Colors.white,
+                  size: 28,
                 ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Growth Progress',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: LevelUpTheme.mutedForeground,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Level $level',
+                      style: const TextStyle(
+                        color: LevelUpTheme.charcoal,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      levelName,
+                      style: const TextStyle(
+                        color: LevelUpTheme.mutedForeground,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              LevelUpBadge(
+                label: '$totalXP XP',
+                tone: LevelUpBadgeTone.gold,
               ),
             ],
           ),
           const SizedBox(height: 16),
-          Stack(
-            children: [
-              Container(
-                height: 10,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              AnimatedFractionallySizedBox(
-                duration: const Duration(milliseconds: 600),
-                curve: Curves.easeOutCubic,
-                widthFactor: progress.clamp(0.0, 1.0),
-                child: Container(
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8A87C),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${(progress * 100).toInt()}% to next level',
+          const Text(
+            'Steady effort adds up.',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
-              fontSize: 12,
+              color: LevelUpTheme.charcoal,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 14),
+          LevelUpProgressBar(
+            value: progress,
+            fillColor: LevelUpTheme.sage,
+            backgroundColor: Colors.white.withOpacity(0.72),
+            height: 10,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '$progressPercent% to your next level',
+            style: const TextStyle(
+              color: LevelUpTheme.mutedForeground,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],

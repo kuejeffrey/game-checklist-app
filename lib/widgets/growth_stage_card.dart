@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../models/growth_stage_model.dart';
+import '../theme/level_up_theme.dart';
+import 'level_up_badge.dart';
+import 'level_up_card.dart';
 
 class GrowthStageCard extends StatelessWidget {
   const GrowthStageCard({
@@ -18,29 +21,18 @@ class GrowthStageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
+    return LevelUpCard(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE7DFF0)),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF7C6EAF).withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
+      borderColor: LevelUpTheme.border,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 64,
             height: 64,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0xFFEDE8F5),
+              color: LevelUpTheme.muted,
               borderRadius: BorderRadius.circular(18),
             ),
             child: _buildGrowthArt(),
@@ -50,30 +42,25 @@ class GrowthStageCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Growth',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.grey.shade500,
-                    letterSpacing: 0.6,
-                  ),
+                const LevelUpBadge(
+                  label: 'Growth loop',
+                  tone: LevelUpBadgeTone.sage,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 10),
                 Text(
                   stage.title,
                   style: const TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF3D3060),
+                    fontWeight: FontWeight.w800,
+                    color: LevelUpTheme.charcoal,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   stage.message,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 13,
-                    color: Colors.grey.shade600,
+                    color: LevelUpTheme.mutedForeground,
                     height: 1.35,
                   ),
                 ),
@@ -84,16 +71,16 @@ class GrowthStageCard extends StatelessWidget {
                       : '$xpToNextStage XP until ${nextStage!.title}',
                   style: const TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF7C6EAF),
-                    fontWeight: FontWeight.w600,
+                    color: LevelUpTheme.sage,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'Total growth: $totalXp XP',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 11,
-                    color: Colors.grey.shade500,
+                    color: LevelUpTheme.mutedForeground,
                   ),
                 ),
               ],

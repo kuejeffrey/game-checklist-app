@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'screens/app_shell_screen.dart';
+import 'screens/auth_screen.dart';
 import 'screens/splash_screen.dart';
 import 'services/supabase_service.dart';
+import 'theme/level_up_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,25 +33,11 @@ class LevelUpApp extends StatelessWidget {
     return MaterialApp(
       title: 'Level Up',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF7C6EAF),
-          brightness: Brightness.light,
-        ),
-        fontFamily: 'Nunito',
-        scaffoldBackgroundColor: const Color(0xFFFAF8F5),
-        cardTheme: CardThemeData(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          color: Colors.white,
-        ),
-      ),
+      theme: LevelUpTheme.buildTheme(),
       initialRoute: '/splash',
       routes: {
         '/splash': (context) => const SplashScreen(),
+        '/auth': (context) => const AuthScreen(),
         '/app': (context) => const AppShellScreen(),
         '/home': (context) => const AppShellScreen(),
       },

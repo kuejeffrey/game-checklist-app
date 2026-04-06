@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../services/supabase_service.dart';
+import '../theme/level_up_theme.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -24,7 +27,11 @@ class _SplashScreenState extends State<SplashScreen>
 
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/app');
+        final nextRoute = SupabaseService.isInitialized &&
+                SupabaseService.currentSession == null
+            ? '/auth'
+            : '/app';
+        Navigator.pushReplacementNamed(context, nextRoute);
       }
     });
   }
@@ -38,61 +45,101 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF7C6EAF),
-      body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.5),
-                    width: 2,
-                  ),
-                ),
-                child: const Center(
-                  child: Text(
-                    '\u2694\uFE0F',
-                    style: TextStyle(fontSize: 48),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Level Up',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'One step at a time',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
-                  fontSize: 16,
-                  letterSpacing: 1,
-                ),
-              ),
-              const SizedBox(height: 60),
-              SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white.withOpacity(0.7),
-                  strokeWidth: 2,
-                ),
-              ),
-            ],
+      backgroundColor: LevelUpTheme.cream,
+      body: Stack(
+        children: [
+          Positioned(
+            top: -120,
+            right: -80,
+            child: _SplashOrb(
+              size: 260,
+              color: LevelUpTheme.sage.withOpacity(0.12),
+            ),
           ),
+          Positioned(
+            bottom: -100,
+            left: -60,
+            child: _SplashOrb(
+              size: 240,
+              color: LevelUpTheme.peach.withOpacity(0.16),
+            ),
+          ),
+          Center(
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 104,
+                    height: 104,
+                    decoration: BoxDecoration(
+                      gradient: LevelUpTheme.authHeroGradient,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: LevelUpTheme.elevatedShadow,
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.auto_awesome_rounded,
+                        size: 46,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Level Up',
+                    style: TextStyle(
+                      color: LevelUpTheme.charcoal,
+                      fontSize: 36,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'One step at a time',
+                    style: TextStyle(
+                      color: LevelUpTheme.mutedForeground,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: LevelUpTheme.sage,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SplashOrb extends StatelessWidget {
+  const _SplashOrb({
+    required this.size,
+    required this.color,
+  });
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
         ),
       ),
     );

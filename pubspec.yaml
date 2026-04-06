@@ -1,7 +1,7 @@
 name: level_up
 description: A cozy daily survival & productivity tracker with game-like rewards.
 publish_to: 'none'
-version: 1.0.2+3
+version: 2.1.0+4
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
