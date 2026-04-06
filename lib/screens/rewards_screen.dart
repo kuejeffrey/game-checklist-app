@@ -139,8 +139,8 @@ class RewardsScreen extends StatelessWidget {
           const SizedBox(height: 18),
           LevelUpProgressBar(
             value: presenter.levelProgress,
-            fillColor: LevelUpTheme.gold,
-            backgroundColor: Colors.white.withOpacity(0.7),
+            gradient: LevelUpTheme.rewardsProgressGradient,
+            backgroundColor: Colors.white.withOpacity(0.6),
           ),
           const SizedBox(height: 12),
           Row(

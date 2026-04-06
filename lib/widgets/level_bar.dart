@@ -100,8 +100,8 @@ class LevelBar extends StatelessWidget {
           const SizedBox(height: 14),
           LevelUpProgressBar(
             value: progress,
-            fillColor: LevelUpTheme.sage,
-            backgroundColor: Colors.white.withOpacity(0.72),
+            gradient: LevelUpTheme.progressBarGradient,
+            backgroundColor: Colors.white.withOpacity(0.6),
             height: 10,
           ),
           const SizedBox(height: 10),

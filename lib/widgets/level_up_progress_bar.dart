@@ -6,13 +6,18 @@ class LevelUpProgressBar extends StatelessWidget {
   const LevelUpProgressBar({
     super.key,
     required this.value,
-    required this.fillColor,
+    this.fillColor,
+    this.gradient,
     this.height = 10,
     this.backgroundColor,
-  });
+  }) : assert(
+          fillColor != null || gradient != null,
+          'Provide either fillColor or gradient',
+        );
 
   final double value;
-  final Color fillColor;
+  final Color? fillColor;
+  final Gradient? gradient;
   final double height;
   final Color? backgroundColor;
 
@@ -22,21 +27,22 @@ class LevelUpProgressBar extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Container(
-          height: height,
-          decoration: BoxDecoration(
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: Container(
+            height: height,
             color: backgroundColor ?? LevelUpTheme.muted,
-            borderRadius: BorderRadius.circular(999),
-          ),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 450),
-              curve: Curves.easeOutCubic,
-              width: constraints.maxWidth * clampedValue,
-              decoration: BoxDecoration(
-                color: fillColor,
-                borderRadius: BorderRadius.circular(999),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeOutCubic,
+                width: constraints.maxWidth * clampedValue,
+                decoration: BoxDecoration(
+                  color: gradient == null ? fillColor : null,
+                  gradient: gradient,
+                  borderRadius: BorderRadius.circular(999),
+                ),
               ),
             ),
           ),

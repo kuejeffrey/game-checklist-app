@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../theme/level_up_theme.dart';
@@ -35,70 +37,76 @@ class LevelUpBottomNav extends StatelessWidget {
     return SafeArea(
       top: false,
       minimum: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.96),
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: LevelUpTheme.border),
-          boxShadow: LevelUpTheme.elevatedShadow,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-          child: Row(
-            children: List<Widget>.generate(_items.length, (index) {
-              final item = _items[index];
-              final isSelected = index == selectedIndex;
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.82),
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.5),
+              ),
+              boxShadow: LevelUpTheme.elevatedShadow,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+              child: Row(
+                children: List<Widget>.generate(_items.length, (index) {
+                  final item = _items[index];
+                  final isSelected = index == selectedIndex;
 
-              return Expanded(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(22),
-                    onTap: () => onDestinationSelected(index),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 220),
-                            curve: Curves.easeOut,
-                            width: 34,
-                            height: 4,
-                            margin: const EdgeInsets.only(bottom: 10),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? LevelUpTheme.sage
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                          ),
-                          Icon(
-                            isSelected ? item.selectedIcon : item.icon,
+                  return Expanded(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(22),
+                        onTap: () => onDestinationSelected(index),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeOut,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
                             color: isSelected
-                                ? LevelUpTheme.sage
-                                : LevelUpTheme.mutedForeground,
+                                ? LevelUpTheme.sage.withOpacity(0.10)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(22),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            item.label,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: isSelected
-                                  ? FontWeight.w700
-                                  : FontWeight.w600,
-                              color: isSelected
-                                  ? LevelUpTheme.sage
-                                  : LevelUpTheme.mutedForeground,
-                            ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isSelected ? item.selectedIcon : item.icon,
+                                color: isSelected
+                                    ? LevelUpTheme.sage
+                                    : LevelUpTheme.mutedForeground,
+                                size: 22,
+                              ),
+                              const SizedBox(height: 4),
+                              AnimatedDefaultTextStyle(
+                                duration: const Duration(milliseconds: 200),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                  color: isSelected
+                                      ? LevelUpTheme.sage
+                                      : LevelUpTheme.mutedForeground,
+                                  fontFamily: 'Nunito',
+                                ),
+                                child: Text(item.label),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              );
-            }),
+                  );
+                }),
+              ),
+            ),
           ),
         ),
       ),

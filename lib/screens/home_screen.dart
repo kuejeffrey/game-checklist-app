@@ -268,9 +268,9 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 16),
           LevelUpProgressBar(
             value: taskProgress,
-            fillColor: LevelUpTheme.sage,
-            height: 14,
-            backgroundColor: Colors.white.withOpacity(0.72),
+            gradient: LevelUpTheme.progressBarGradient,
+            height: 10,
+            backgroundColor: Colors.white.withOpacity(0.6),
           ),
           const SizedBox(height: 14),
           Row(

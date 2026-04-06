@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../models/task_model.dart';
 import '../theme/level_up_theme.dart';
 import 'level_up_badge.dart';
-import 'level_up_card.dart';
 
 class TaskTile extends StatefulWidget {
   const TaskTile({
@@ -88,6 +87,9 @@ class _TaskTileState extends State<TaskTile>
 
   @override
   Widget build(BuildContext context) {
+    final isCompleted = widget.task.isCompleted;
+    final accentColor = widget.categoryColor;
+
     return ScaleTransition(
       scale: _scaleAnimation,
       child: Stack(
@@ -98,135 +100,169 @@ class _TaskTileState extends State<TaskTile>
             builder: (context, child) {
               final glow = _controller.value;
               return Container(
-                margin: const EdgeInsets.only(bottom: 10),
+                margin: const EdgeInsets.only(bottom: 8),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: BorderRadius.circular(18),
                   boxShadow: [
+                    ...LevelUpTheme.cardShadow,
                     if (glow > 0)
                       BoxShadow(
-                        color: LevelUpTheme.sage.withOpacity(glow * 0.16),
-                        blurRadius: 18,
+                        color: LevelUpTheme.sage.withOpacity(glow * 0.18),
+                        blurRadius: 20,
                         spreadRadius: glow * 2,
-                        offset: const Offset(0, 8),
+                        offset: const Offset(0, 6),
                       ),
                   ],
                 ),
                 child: child,
               );
             },
-            child: LevelUpCard(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              radius: 22,
-              color:
-                  widget.task.isCompleted ? const Color(0xFFF8FBF8) : Colors.white,
-              borderColor: widget.task.isCompleted
-                  ? LevelUpTheme.sage.withOpacity(0.28)
-                  : LevelUpTheme.border,
-              boxShadow: const [],
-              onTap: widget.onToggle,
-              onLongPress:
-                  widget.onDelete != null ? () => _showDeleteDialog(context) : null,
-              child: Row(
-                children: [
-                  Container(
-                    width: 46,
-                    height: 46,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: widget.categoryColor.withOpacity(
-                        widget.task.isCompleted ? 0.16 : 0.12,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      widget.task.emoji,
-                      style: const TextStyle(fontSize: 22),
-                    ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: Material(
+                color: Colors.transparent,
+                child: Ink(
+                  decoration: BoxDecoration(
+                    color: isCompleted
+                        ? LevelUpTheme.muted.withOpacity(0.7)
+                        : LevelUpTheme.surface,
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.task.label,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            decoration: widget.task.isCompleted
-                                ? TextDecoration.lineThrough
-                                : null,
-                            color: widget.task.isCompleted
-                                ? LevelUpTheme.mutedForeground
-                                : LevelUpTheme.charcoal,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            if (widget.categoryLabel != null)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: widget.categoryColor.withOpacity(0.12),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  widget.categoryLabel!,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: widget.categoryColor,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            LevelUpBadge(
-                              label: widget.task.isCompleted
-                                  ? 'Completed'
-                                  : '+${widget.task.xpValue} XP',
-                              tone: widget.task.isCompleted
-                                  ? LevelUpBadgeTone.success
-                                  : LevelUpBadgeTone.gold,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 5,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(18),
+                    onTap: widget.onToggle,
+                    onLongPress: widget.onDelete != null
+                        ? () => _showDeleteDialog(context)
+                        : null,
+                    child: IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Left accent strip
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            width: 4,
+                            decoration: BoxDecoration(
+                              color: isCompleted
+                                  ? accentColor.withOpacity(0.3)
+                                  : accentColor,
+                              borderRadius: const BorderRadius.horizontal(
+                                left: Radius.circular(18),
                               ),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          // Content
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 14,
+                              ),
+                              child: Row(
+                                children: [
+                                  // Emoji
+                                  AnimatedOpacity(
+                                    duration: const Duration(milliseconds: 300),
+                                    opacity: isCompleted ? 0.5 : 1.0,
+                                    child: Container(
+                                      width: 42,
+                                      height: 42,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: accentColor.withOpacity(0.10),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        widget.task.emoji,
+                                        style: const TextStyle(fontSize: 21),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  // Labels
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        AnimatedDefaultTextStyle(
+                                          duration: const Duration(
+                                              milliseconds: 300),
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700,
+                                            fontFamily: 'Nunito',
+                                            decoration: isCompleted
+                                                ? TextDecoration.lineThrough
+                                                : null,
+                                            decorationColor:
+                                                LevelUpTheme.mutedForeground,
+                                            color: isCompleted
+                                                ? LevelUpTheme.mutedForeground
+                                                : LevelUpTheme.charcoal,
+                                          ),
+                                          child: Text(widget.task.label),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        LevelUpBadge(
+                                          label: isCompleted
+                                              ? 'Completed'
+                                              : '+${widget.task.xpValue} XP',
+                                          tone: isCompleted
+                                              ? LevelUpBadgeTone.success
+                                              : LevelUpBadgeTone.gold,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  // Check
+                                  AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 250),
+                                    switchInCurve: Curves.easeOutBack,
+                                    switchOutCurve: Curves.easeIn,
+                                    transitionBuilder: (child, animation) =>
+                                        ScaleTransition(
+                                      scale: animation,
+                                      child: child,
+                                    ),
+                                    child: isCompleted
+                                        ? Icon(
+                                            Icons.check_circle_rounded,
+                                            key: const ValueKey('checked'),
+                                            color: LevelUpTheme.sage,
+                                            size: 28,
+                                          )
+                                        : Icon(
+                                            Icons.circle_outlined,
+                                            key: const ValueKey('unchecked'),
+                                            color: LevelUpTheme.mutedForeground
+                                                .withOpacity(0.5),
+                                            size: 26,
+                                          ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 220),
-                    child: widget.task.isCompleted
-                        ? const Icon(
-                            Icons.check_circle_rounded,
-                            key: ValueKey('checked'),
-                            color: LevelUpTheme.sage,
-                            size: 30,
-                          )
-                        : const Icon(
-                            Icons.radio_button_unchecked_rounded,
-                            key: ValueKey('unchecked'),
-                            color: LevelUpTheme.mutedForeground,
-                            size: 28,
-                          ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
+          // Floating XP pill
           Positioned(
-            top: -8,
-            right: 14,
+            top: -6,
+            right: 12,
             child: IgnorePointer(
               child: FadeTransition(
                 opacity: _xpFadeAnimation,
@@ -235,10 +271,10 @@ class _TaskTileState extends State<TaskTile>
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
-                      vertical: 6,
+                      vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: LevelUpTheme.sage,
+                      gradient: LevelUpTheme.progressBarGradient,
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
